@@ -71,7 +71,7 @@ public class u2net : MonoBehaviour
 
             // Create a new texture with the modified pixels
             Texture2D resultTexture = new Texture2D(finalWidht, finalHeight);
-            //resultTexture.SetPixels(inputPixels);
+
 
             // Set the constant pixels in the middle
             for (int y = 0; y < CONST_RESOLUTION; y++)
@@ -84,8 +84,8 @@ public class u2net : MonoBehaviour
 
 
             resultTexture.Apply();
-            Texture2D ss = StretchTexture(resultTexture);
-            byte[] pngData = ss.EncodeToPNG();
+
+            byte[] pngData = resultTexture.EncodeToPNG();
 
             // Specify the file path where you want to save the image
             string filePath = Path.Combine(Application.dataPath, "SavedImage.png");
@@ -95,7 +95,7 @@ public class u2net : MonoBehaviour
 
             Debug.Log("Image saved locally at: " + filePath);
 
-            Sprite resultSprite = Sprite.Create(ss, new Rect(0, 0, finalWidht, finalHeight), Vector2.one * 0.5f);
+            Sprite resultSprite = Sprite.Create(resultTexture, new Rect(0, 0, finalWidht, finalHeight), Vector2.one * 0.5f);
             outputRGBA.sprite = resultSprite;
 
         }
@@ -130,29 +130,4 @@ public class u2net : MonoBehaviour
         return resizedTexture;
     }
 
-    Texture2D StretchTexture(Texture2D inputTexture)
-    {
-        int outputWidth = 600;
-        int outputHeight = 500;
-
-        // Create a RenderTexture to stretch the texture
-        RenderTexture rt = new RenderTexture(outputWidth, outputHeight, 0, RenderTextureFormat.ARGB32);
-        RenderTexture.active = rt;
-
-        // Set the texture filter mode to Point to prevent interpolation during stretching
-        inputTexture.filterMode = FilterMode.Point;
-
-        // Use Graphics.DrawTexture to stretch the texture to the RenderTexture
-        Graphics.DrawTexture(new Rect(0, 0, outputWidth, outputHeight), inputTexture);
-
-        // Create a new Texture2D and read the pixels from the RenderTexture
-        Texture2D stretchedTexture = new Texture2D(outputWidth, outputHeight);
-        stretchedTexture.ReadPixels(new Rect(0, 0, outputWidth, outputHeight), 0, 0);
-        stretchedTexture.Apply();
-
-        // Reset the active RenderTexture
-        RenderTexture.active = null;
-
-        return stretchedTexture;
-    }
 }
